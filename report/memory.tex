@@ -23,7 +23,7 @@ AX-XB = C; A,B,C,X \in \mathbb{R}^{nxn}
 
 Check correctness with:
 \begin{equation}
-||AX-BX - C||_{\mathbb{F}} = 0
+||AX-XB - C||_{\mathbb{F}} = 0
 \end{equation}
 
 Steps:
@@ -34,14 +34,11 @@ You can decompose $B$ as follows:
 B = QTQ^{T}; QQ^{T} = I, T \in \text{upper triang}
 \end{equation}
 
-
-
-
 Then:
 
 \begin{gather}
 AX-XB = C = AX-XQTQ^{T}\\ 
-= (AX-XQTQ^{T})Q = CQ \\	
+(AX-XQTQ^{T})Q = CQ \\	
 = AXQ-XQTQ^{T}Q = CQ \\
 = AXQ-XQT= CQ \\
 \end{gather}
@@ -55,9 +52,11 @@ AY-YT = D
 At this point, there are two options:
 
 \begin{enumerate}
-	\item $T$ is upper triangular
-	\item $T$ is Schur?
+	\item $T$ is upper triangular.
+	\item $T$ is in Schur form.
 \end{enumerate}
+
+\subsection{Option 1: T is upper triangular}
 
 In the first case:
 

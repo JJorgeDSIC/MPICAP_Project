@@ -2,7 +2,6 @@ function [Y] = solver_AY_YT_D(A,T,D)
 
 N = size(A,1);
 Y = zeros(N);
-Daux = zeros(N,1);
 I = eye(N);
 i = 1;
 
@@ -10,7 +9,7 @@ while i<=N
 
     if i~=N & T(i+1,i) ~=0
 
-        disp("No es triangular superior");
+        %disp("No es triangular superior");
         
         for j=1:i
             D(:,i) = D(:,i) + Y(:,j)*T(j,i);
@@ -21,7 +20,9 @@ while i<=N
         Ds = D(:,i+1);
         P = Dk/T(i+1,i);
         R = (A-T(i,i)*I)/T(i+1,i);
+
         Z = A*R-T(i,i+1)*I-R*T(i+1,i+1);
+
         W = Ds + A*P - P.*T(i+1,i+1);
         %Zx = W
         %x = Z\W

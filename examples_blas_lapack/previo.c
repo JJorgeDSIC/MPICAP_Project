@@ -197,13 +197,17 @@ double* Y=calloc(n*n,sizeof(double));
 double* Daux=calloc(n,sizeof(double));
 double* Z=malloc(n*n*sizeof(double));
 double* b=malloc(n*sizeof(double));
-//Non-triangular things
+double* Yaux=malloc(n*sizeof(double));;
+
+double* R=malloc(n*n*sizeof(double));
+double* Rs=malloc(n*n*sizeof(double));
+double* AP=malloc(n*n*sizeof(double));
+double* AR=malloc(n*n*sizeof(double));
 double* Dk = malloc(n*sizeof(double));
 double* Ds = malloc(n*sizeof(double));
 
 int* IPIV;
 int INFO;
-double* Yaux=malloc(n*sizeof(double));;
 int nsquare = n * n;
 double alpha;
 const double one = 1.0;
@@ -216,7 +220,9 @@ const int nPlusOne = n+1;
 int i = 0;
 int j = 0;
 
-while(i < 3){
+while(i < 2){
+
+  printf("======ITERATION: %d======\n", i);
   
   if(i != n-1 & T(i+1,i)!=0){
 
@@ -246,18 +252,62 @@ while(i < 3){
       
     }
 
-    printf("====D====\n");
-    printMat(D, n);
+    //printf("====D====\n");
+    //printMat(D, n);
     
     // Dk = D(:,i);
-    // Ds = D(:,i+1);
+    //dcopy_(&n, &D[i*n], &oneI, Dk, &oneI);
+    //printf("====Dk, col=(%d)====\n",i);
+    //printVect(Dk, n);
     // P = Dk/T(i+1,i);
-    // R = (A-T(i,i)*I)/T(i+1,i);
-    // Z = A*R-T(i,i+1)*I-R*T(i+1,i+1);
+    //dscal_(&n, 1.0/T[(i+1)+i*n], Dk, &oneI);
+    //printf("====Dk, col=(%d)====\n",i);
+    //printVect(Dk, n);
+    // Ds = D(:,i+1);
+    //dcopy_(&n, &D[(i+1)*n], &oneI, Ds, &oneI);
+    //printf("====Ds, col=(%d)====\n",i);
+    //printVect(Ds, n);
+
+
+    //1)Z =(A-T(i,i)*I)
+    //Z = A
+    //dcopy_(&nsquare, A, &oneI, Z, &oneI);
+    // Z = Z-(T(i,i)*I);
+    //daxpy_(&n, &minusOne, &T(i,i), &zero, Z, &nPlusOne);
+
+    //2)/T(i+1,i);
+    // R = Z/T(i+1,i);
+    //dscal_(&nsquare, 1.0/T[(i+1)+i*n], Z, &oneI);
+
+    //A*R
+    //dgemm_( "N", "N", &n, &n, &n, &one, A, &n, Z, &n, &one, AR, &n );
+    //(A*R-T(i,i+1)*I)
+    //daxpy_(&n, &minusOne, &T[i+(i+i)*n], &zero, AR, &nPlusOne);
+    //dcopy_(&nsquare, Z, &oneI, Rs, &oneI);
+    //R*T(i+1,i+1)
+    //dscal_(&nsquare, T[(i+1)+(i+1)*n], Rs, &oneI);
+
+    // J = (A*R-T(i,i+1)*I)-R*T(i+1,i+1);
+    // (same as) J = AR-Rs
+    //daxpy_(&n, &minusOne, Rs, &one, AR, &one);
+
     // W = Ds + A*P - P.*T(i+1,i+1);
+    //(same as)
+    // W = Ds + A*Dk - Dk*T(i+1,i+1);
+    //AP=A*Dk
+    //dgemm_( "N", "N", &n, &n, &n, &one, A, &n, Dk, &n, &one, AP, &n );
+    //Dk*T(i+1,i+1);
+    //dscal_(&n, T[(i+1)+(i+1)*n], Dk, &oneI);
+
+    //daxpy_(&n, &one, Ds, &one, AR, &one);
     // %Zx = W
-    // %x = Z\W
-    // Y(:,i) = Z\W;
+    // %x = J\W
+
+    // Y(:,i) = J\W;
+    //dgesv_(&n, &oneI, AR, &n, IPIV, b, &n, &INFO);
+
+
+
     // Y(:,i+1) = R*Y(:,i) - P;
     // i=i+1;
     i++;
@@ -279,22 +329,19 @@ while(i < 3){
     // for j=1:i
     //     D(:,i) = D(:,i) + Y(:,j)*T(j,i);
     // end
-    for (j = 0; j < i; ++j)
+    for (j = 0; j <i; ++j)
     {
-      /* code */
+      //Yaux <- Y(:,j) 
       dcopy_(&n, &Y[j*n], &oneI, Yaux, &oneI);
-      // printf("====Y====\n");
-      // printMat(Y, n);
-      // printf("====Yaux====\n");
-      // printVect(Yaux, n);
+      //alpha <- T(j,i)
       alpha = T[j+i*n];//T(j,i);
+      //Yaux*T(j,i)
       dscal_(&n, &alpha, Yaux, &oneI);
-      //printf("====Yaux====\n");
-      //printVect(Yaux, n);
+      //D(:,i)<-D(:,i) + Yaux*T(j,i)
       daxpy_(&n, &one, Yaux, &oneI, &D[i*n], &oneI);
       
-      //printf("====Yaux====\n");
-      //printVect(Yaux, n);
+      printf("====Yaux====\n");
+      printVect(Yaux, n);
       printf("====D====\n");
       printMat(D, n);
     }
@@ -303,9 +350,9 @@ while(i < 3){
     // b = D(:,i); //D[i+j*n]
     dcopy_(&n, &D[i*n], &oneI, b, &oneI);
     //printf("====D====\n");
-    //printVect(&D[i*n], n);
-    //printf("====b====\n");
-    //printVect(b, n);
+    //printMat(D, n);
+    printf("====b====\n");
+    printVect(b, n);
     // %x = Y(:i);
     // %Zx = b
     // %x = Z\b
@@ -321,13 +368,13 @@ while(i < 3){
     // ) 
     dgesv_(&n, &oneI, Z, &n, IPIV, b, &n, &INFO);
 
-    if (INFO!=0){
-      printf("Error: dgeev returned error code %d ",INFO);
-      return -1;
-    }
-    dcopy_(&n, b, &oneI, &Y[i*n], &oneI);
-    printf("====Y====\n");
-    printMat(Y, n);
+    //if (INFO!=0){
+    //  printf("Error: dgeev returned error code %d ",INFO);
+    // return -1;
+    //}
+    //dcopy_(&n, b, &oneI, &Y[i*n], &oneI);
+    //printf("====Y====\n");
+    //printMat(Y, n);
     printf("====b====\n");
     printVect(b, n);
 
@@ -375,26 +422,30 @@ int main(int argc, char **argv) {
   double *C;
   double *I;
 
-  //A=malloc(n*n*sizeof(double));
-  //B=malloc(n*n*sizeof(double));
-  //BSchur=malloc(n*n*sizeof(double));
-  //X=malloc(n*n*sizeof(double));
-  //C=calloc(n*n,sizeof(double));
-  //AX=malloc(n*n*sizeof(double));
-  //BX=malloc(n*n*sizeof(double));
+  A=malloc(n*n*sizeof(double));
+  B=malloc(n*n*sizeof(double));
+  BSchur=malloc(n*n*sizeof(double));
+  X=malloc(n*n*sizeof(double));
+  C=calloc(n*n,sizeof(double));
+  AX=malloc(n*n*sizeof(double));
+  BX=malloc(n*n*sizeof(double));
+  I=malloc(n*n*sizeof(double));
+
+  for(i = 0; i < n; i++)
+    I(i,i) = 1.0;
 
   srand(time(0));
 
   ctimer(&t1,&tucpu,&tscpu);
   
-  // printf("====Filling A====\n");
-  // fillMatrix(A, n);
-  // printf("====Filling B====\n");
-  // fillMatrix(B, n);
-  // fillMatrix(BSchur, n);
-  // printf("====Filling X====\n");
-  // fillMatrix(X, n);
-  // printf("====Filling C====\n");
+  printf("====Filling A====\n");
+  fillMatrix(A, n);
+  printf("====Filling B====\n");
+  fillMatrix(B, n);
+  fillMatrix(BSchur, n);
+  printf("====Filling X====\n");
+  fillMatrix(X, n);
+  printf("====Filling C====\n");
   //fillMatrixWithValue(C, 0.0, n);
 
   // printf("====A====\n");
@@ -409,11 +460,11 @@ int main(int argc, char **argv) {
   // printMat(I, n);
 
   //AX=A*X
-  //matmult(A,X,AX,n);
+  matmult(A,X,AX,n);
   //printf("====AX====\n");
   //printMat(AX, n);
   //BX=B*X
-  //matmult(B,X,BX,n);
+  matmult(B,X,BX,n);
 
   //printf("====BX====\n");
   //printMat(BX, n);
@@ -425,7 +476,7 @@ int main(int argc, char **argv) {
   /********************/
 
 
-  //matsum(AX, BX, C, n);
+  matsum(AX, BX, C, n);
 
   /********************/
   /********************/
@@ -496,8 +547,8 @@ int main(int argc, char **argv) {
 
   matmult(Ctest,Q,D,n);
 
-  printf("====D====\n");
-  printMat(D, n);
+  //printf("====D====\n");
+  //printMat(D, n);
 
   // printf("====T====\n");
   // printMat(T, n);
