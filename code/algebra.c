@@ -202,7 +202,7 @@ int solveSystem(double* A,double* B,double* C, double* Xcalc, int n){
   //Solving the equivalent system with unknown Y 
   double* Y=calloc(n*n,sizeof(double));
 
-  printf("====Solving the System====\n");
+  //printf("====Solving the System====\n");
   solveSystemWithY(A, T, D, Y, n);
 
   //Obtaining X = Y*Q'
@@ -231,13 +231,13 @@ double frobeniusNorm(double* A, int n){
 
 int generateProblem(double* A, double* B, double* X, double* C, int n){
 
-  printf("====Filling A====\n");
+  //printf("====Filling A====\n");
   fillMatrix(A, n);
-  printf("====Filling B====\n");
+  //printf("====Filling B====\n");
   fillMatrix(B, n);
-  printf("====Filling X====\n");
+  //printf("====Filling X====\n");
   fillMatrix(X, n);
-  printf("====Filling C====\n");
+  //printf("====Filling C====\n");
   //fillMatrix(&C, n);
 
   double* AX=calloc(n*n,sizeof(double));
@@ -258,13 +258,13 @@ int generateProblem(double* A, double* B, double* X, double* C, int n){
   free(AX);
   free(XB);
 
-  printf("====Problem created====\n");
+  //printf("====Problem created====\n");
 
   return 0;
 }
 
 
-int checkSolution(double* A, double* B, double* C, double* Xcalc, double* Xreal, int n){
+int checkSolution(double* A, double* B, double* C, double* Xcalc, double* Xreal, int n, float diff){
 
   const double one = 1.0;
   const double minusOne = -1.0;
@@ -282,13 +282,15 @@ int checkSolution(double* A, double* B, double* C, double* Xcalc, double* Xreal,
 
   daxpy_(&nsquare, &minusOne, C, &oneI, AX, &oneI);
 
-  printf("====Tot====\n");
-  printf("Frob. Norm with C=%.16f\n",frobeniusNorm(AX, n));
+  //printf("====Tot====\n");
+  //printf("Frob. Norm with C=%.16f\n",frobeniusNorm(AX, n));
 
   daxpy_(&nsquare, &minusOne, Xcalc, &oneI, Xreal, &oneI);
 
-  printf("====Tot====\n");
-  printf("Frob. Norm with real X=%.16f\n", frobeniusNorm(Xreal, n));
+  //printf("====Tot====\n");
+  //printf("Frob. Norm with real X=%.16f\n", frobeniusNorm(Xreal, n));
+
+  printf("%d %.6f %.16f %.16f\n",n,(float) diff, frobeniusNorm(AX, n), frobeniusNorm(Xreal, n));
 
   free(AX);
   free(XB);

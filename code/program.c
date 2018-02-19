@@ -62,12 +62,13 @@ int main(int argc, char **argv) {
 
   solveSystem(A,B,C,Xcalc,n);
   
-  printf("Iteration ended\n");
-
-  checkSolution(A,B,C,Xcalc,X,n);
+  //printf("Iteration ended\n");
 
   ctimer(&t2,&tucpu,&tscpu);
-  printf("%f segundos \n",(float) (t2-t1));
+
+  checkSolution(A,B,C,Xcalc,X,n,(t2-t1));
+
+  //printf("%f segundos \n",(float) (t2-t1));
 
   free(A);
   free(B);

@@ -1,0 +1,8 @@
+\BOOKMARK [1][-]{section.1}{Problema propuesto}{}% 1
+\BOOKMARK [2][-]{subsection.1.1}{Opci\363n 1: T es triangular superior}{section.1}% 2
+\BOOKMARK [2][-]{subsection.1.2}{Opci\363n 2: T est\341 en forma real de Schur}{section.1}% 3
+\BOOKMARK [1][-]{section.2}{Implementaci\363n: Llamadas a BLAS/LAPACK}{}% 4
+\BOOKMARK [2][-]{subsection.2.1}{DGESV: Soluci\363n del sistema de ecuaciones lineales AX=B}{section.2}% 5
+\BOOKMARK [2][-]{subsection.2.2}{DGEES: Factorizaci\363n de Schur}{section.2}% 6
+\BOOKMARK [1][-]{section.3}{Comparativa de tiempos}{}% 7
+\BOOKMARK [1][-]{section.4}{Conclusiones}{}% 8
